@@ -1,6 +1,6 @@
 var startPos = 1.5 * Math.PI;
 var endPos = (3.5 - (2 / 14)) * Math.PI;
-var canvas = document.getElementById("myCanvas");
+var canvas = document.getElementById("circularCanvas");
 var canvasCenter = [canvas.width / 2, canvas.height / 2];
 
 function initSched(title, daysCount, lineWidth, isDark) {

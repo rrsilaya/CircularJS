@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<style type="text/css">
-		label {
-			margin-right: 1em;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 <body>
+<div id="workarea">
+	<canvas id="circularCanvas">
+		Your browser does not support the HTML5 canvas tag.
+	</canvas>
+</div>
 
-<canvas id="circularCanvas" width="870" height="600">
-Your browser does not support the HTML5 canvas tag.</canvas>
+<!-- https://mega.nz/#!Q3QVVT5A!wAV8kG1DkmUOw9VU-KeOerFU1D3fE7J5up1wS4VIKWI -->
 
 <script src="circular.js"></script>
 <script type="text/javascript">
-	circular.init("circularCanvas", "Ralph's Sched");
+	circular.init("circularCanvas", {
+		label: "Ralph's Schedule",
+	});
 </script>
 </body>
 </html>

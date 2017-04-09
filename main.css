@@ -1,0 +1,19 @@
+html, body {
+	min-width: 970px;
+	min-height: 600px;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+#workarea {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #252525;
+	height: 100%;
+	width: 100%;
+}
+	#workarea canvas {
+		box-shadow: 0 0 1.5em rgba(0,0,0,0.5);
+	}

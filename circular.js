@@ -21,12 +21,13 @@
 			y: 0 // - space for labels
 		},
 		config = {
+			label: "My Schedule",
 			background: "#2c3e50",
 			isDarkTheme: true,
+			hasEdge: true,
 
 			shadowColor: "rgba(0,0,0,0.3)",
-			dayCount: 5,
-			size: 20,
+			size: 25,
 
 			title: {
 				font: "Arial",
@@ -55,6 +56,16 @@
 			time[1] = (time[1] / 15); // minutes
 
 			return ((time[0] + time[1]) * (2.0 / 48) + 1.5) * Math.PI;
+		},
+		
+		uuid = function() {
+			var generated = "";
+
+			for(var i = 0; i < 4; i++) {
+				generated += ((1 + Math.random() * 0x10000) | 0).toString(16);
+			}
+
+			return generated;
 		};
 
 	circular.addConfig = function (custConf) {
@@ -73,7 +84,7 @@
 		}
 	};
 
-	circular.init = function(id, title, customConfig) {
+	circular.init = function(id, customConfig) {
 		// Load Canvas
 		if (!(canvas = document.getElementById(id))) {
 			var suggestions = document.getElementsByTagName("canvas");
@@ -81,8 +92,10 @@
 		}
 
 		canvasID = id;
+		canvas.width = 950;
+		canvas.height = 600;
 
-		cCenter.x = (canvas.width / 2) - (canvas.width * 0.15);
+		cCenter.x = (canvas.width / 2) - (canvas.width * 0.18);
 		cCenter.y = canvas.height / 2;
 
 		// Load Config
@@ -96,12 +109,13 @@
 		setter.fillRect(0, 0, canvas.width, canvas.height);
 
 		// Draw Placeholder
-		for(var i = 0; i < config.dayCount; i++) {
+		for(var i = 0; i < 5; i++) {
 			setter.beginPath();
 			setter.arc(cCenter.x, cCenter.y, 100 + (i * (config.size + 5)), constant.startPos, constant.endPos);
 			setter.lineWidth = config.size;
 			if (config.isDarkTheme) setter.strokeStyle = "rgba(256,256,256,0.075)";
-			else setter.strokeStyle = "rgba(0,0,0,0.075)";
+			else setter.strokeStyle = "rgba(0,0,0,0.1)";
+			if (!config.hasEdge) setter.lineCap = "round";
 			setter.stroke();
 			setter.closePath();
 
@@ -111,8 +125,9 @@
 				setter.fillStyle = config.title.color;
 				setter.textAlign = "center";
 				setter.textBaseline = "middle";
+				setter.font = "bold " + config.title.size + "pt " + config.title.font;
 				setter.beginPath();
-				setter.fillText(title, cCenter.x, cCenter.y);
+				setter.fillText(config.label, cCenter.x, cCenter.y);
 				setter.fill();
 			}
 
@@ -126,13 +141,100 @@
 				var angle = hour * Math.PI / 6.5;
 
 				setter.rotate(angle);
-				setter.translate(0, -(cCenter.y) * ((0.0194 * config.size) + config.dayCount * 0.086))
+				setter.translate(0, -(cCenter.y) * ((0.0194 * config.size) + 5 * 0.08))
 				setter.rotate(-angle);
-				setter.fillText((hour > 5 ? hour - 12 : hour) + 7 + ":00 ", cCenter.x, cCenter.y);
+				setter.fillText((hour > 5 ? hour - 12 : hour) + 7 + ":00", cCenter.x, cCenter.y);
 				setter.rotate(angle);
-				setter.translate(0, cCenter.y * ((0.0194 * config.size) + config.dayCount * 0.086));
+				setter.translate(0, cCenter.y * ((0.0194 * config.size) + 5 * 0.08));
 				setter.rotate(-angle);
 			}
+
+			// Write Days
+			var dayLabel = ["M", "T", "W", "Th", "Fr"];
+
+			for(var j = 0; j < 5; j++) {
+				setter.beginPath();
+				setter.fillStyle = config.title.color;
+				setter.textAlign = !config.hasEdge ? "center" : "right";
+				setter.textBaseline = "middle";
+				setter.fillText(dayLabel[4 - j], !config.hasEdge ? cCenter.x + 5: cCenter.x - 10, cCenter.y - (100 + (j * (config.size + 5))));
+				setter.fill();
+				setter.closePath();
+			}
+		}
+	}
+
+	circular.getSubjects = function() {
+		return subjects;
+	}
+
+	circular.addCourse = function(day, time, courseTitle, section, room, color) {
+		var id,
+			illust = canvas.getContext("2d"),
+			parseTime = function(time) {
+				var time = time.split(":");
+
+				time[0] = (time[0] - 7) * 4; // hours
+				time[1] = (time[1] / 15); // minutes
+
+				return ((time[0] + time[1]) * ((3.5 - (2 / 14) - 1.5) / 48) + 1.5) * Math.PI;
+			},
+			drawBounds = function(bound, x, y) {
+				var dimensions = config.time.size + 1;
+
+				bound.lineTo(x, y);
+				bound.lineTo(x + dimensions, y);
+				bound.lineTo(x + dimensions, y + dimensions);
+				bound.lineTo(x, y + dimensions);
+			};
+
+		time = time.split("-");
+
+		// Draw Course
+		for(var i = 0; i < day.length; i++) {
+			illust.beginPath();
+			illust.arc(cCenter.x, cCenter.y, 100 + (day[i] * (config.size + 5)), parseTime(time[0]), parseTime(time[1]));
+			illust.lineWidth = config.size;
+			illust.strokeStyle = color;
+			if (!config.hasEdge) illust.lineCap = "round";
+			illust.stroke();
+			illust.closePath();
+		}
+
+		// List Subjects
+		var subjectPos = [circular.getSubjects().length % 2 == 0 ? canvas.width - (canvas.width / 2.85) : canvas.width - (canvas.width / 5.45),
+						  (canvas.height - (canvas.height / 1.35) + (Math.floor(circular.getSubjects().length / 2) * 45))];
+
+		illust.beginPath();
+		illust.fillStyle = color;
+		drawBounds(illust, subjectPos[0], subjectPos[1]);
+		illust.fill();
+		illust.textAlign = "left";
+		illust.textBaseline = "hanging";
+		illust.font = "bold " + config.time.size + "pt " + config.time.font;
+		illust.fillStyle = config.time.color;
+		illust.fillText(courseTitle + " " + section, subjectPos[0] + 20.5, subjectPos[1] + 0.9);
+		illust.font = config.time.size + "pt " + config.time.font;
+		illust.fillText(room || "TBA", subjectPos[0] + 20.5, subjectPos[1] + 18);
+		illust.closePath();
+
+		// Register to Array of Subjects
+		subjects.push({
+			id: id = uuid(),
+			args: arguments
+		});
+
+		return id;
+	}
+
+	circular.refresh = function() {
+		var subject = circular.getSubjects(),
+			i;
+		circular.init(canvasID, config);
+
+		// Redo Subjects
+		for(i = 0; i < subject.length; i++) {
+			circular.addCourse(subject[i].args[0], subject[i].args[1], subject[i].args[2], subject[i].args[3], subject[i].args[4], subject[i].args[5]);
 		}
 	}
 

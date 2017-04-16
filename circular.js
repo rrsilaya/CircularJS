@@ -25,24 +25,32 @@
 			background: "#2c3e50",
 			isDarkTheme: true,
 			hasEdge: true,
-			invertedDays: true,
-
-			shadowColor: "rgba(0,0,0,0.3)",
+			invertedDays: false,
 			size: 25,
 
 			title: {
 				font: "Arial",
 				size: 12,
 				color: "#ffffff",
-				shadowColor: "rgba(0,0,0,0.3)"
 			},
 
 			time: {
 				font: "Arial",
 				size: 10.5,
 				color: "#ffffff",
-				shadowColor: "rgba(0,0,0,0.3)"
-			}
+			},
+
+			colors: ["#1abc9c",
+					 "#2ecc71",
+					 "#3498db",
+					 "#8e44ad",
+					 "#f1c40f",
+					 "#d35400",
+					 "#e74c3c",
+					 "#7f8c8d",
+					 "#16a085",
+					 "#9b59b6",
+					 "#f39c12"]
 		},
 		// Constant Values
 		constant = {
@@ -67,23 +75,23 @@
 			}
 
 			return generated;
-		};
+		},
 
-	circular.addConfig = function (custConf) {
-		var i, j;
+		addConfig = function (custConf) {
+			var i, j;
 
-		for (i in custConf) {
-			if (custConf.hasOwnProperty(i) && config[i]) {
-				if (typeof custConf[i] === "object") {
-					for (j in custConf[i]) {
-						config[i][j] = custConf[i][j];
+			for (i in custConf) {
+				if (custConf.hasOwnProperty(i) && config[i]) {
+					if (typeof custConf[i] === "object") {
+						for (j in custConf[i]) {
+							config[i][j] = custConf[i][j];
+						}
+					} else {
+						config[i] = custConf[i];
 					}
-				} else {
-					config[i] = custConf[i];
 				}
 			}
-		}
-	};
+		};
 
 	circular.init = function(id, customConfig) {
 		// Load Canvas
@@ -100,7 +108,7 @@
 		cCenter.y = canvas.height / 2;
 
 		// Load Config
-		customConfig && circular.addConfig(customConfig);
+		customConfig && addConfig(customConfig);
 
 		var setter = canvas.getContext("2d");
 		setter.clearRect(0, 0, canvas.width, canvas.height);
@@ -192,9 +200,10 @@
 		time = time.split("-");
 
 		// Draw Course
+		color =  color || config.colors[subjects.length % config.colors.length];
 		for(var i = 0; i < day.length; i++) {
 			illust.beginPath();
-			illust.arc(cCenter.x, cCenter.y, 100 + (day[i] * (config.size + 5)), parseTime(time[0]), parseTime(time[1]));
+			illust.arc(cCenter.x, cCenter.y, 100 + ((config.invertedDays ? day[i] : 4 - day[i]) * (config.size + 5)), parseTime(time[0]), parseTime(time[1]));
 			illust.lineWidth = config.size;
 			illust.strokeStyle = color;
 			if (!config.hasEdge) illust.lineCap = "round";

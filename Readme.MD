@@ -39,7 +39,7 @@ circular.init(id, customConfig);
 circular.addCourse(day, time, courseTitle, section, room, color);
 ```
 * **day** - *(array)* day of subjects -- 0: Mon, 1: Tue, 2: Wed, 3: Thu, 4: Fri
-* **time** - time of the subjects *in military time* separated by "-"
+* **time** - time of the subjects *in 24 hour time* separated by "-"
 * **courseTitle** - course title/course name
 * **section** - section
 * **room** - room *(optional)*
@@ -82,5 +82,7 @@ circular.getCourse(id);
 circular.download();
 ```
 
-### Development
-If you would like to contribute to this project, just send a pull request. If you have any questions, you can contact me via [email](mailto:rrsilaya@up.edu.ph).
+## Development
+If you would like to contribute to this project, just send a pull request.
+If you have any questions, you can contact me via [email](mailto:rrsilaya@up.edu.ph).
+You can also visit me [here](http://rrsilaya.github.io).

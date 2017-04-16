@@ -1,27 +1,83 @@
 # Circular
 Circular is a Javascript library for drawing a week-long circular schedule/timetable for university students using HTML5 canvas.
 
-> **NOTE:** This is still *under development*.
-
 ## Setting Up
-1. Import the script by adding `<script src="/path/to/script/canvas.js">` inside the `<body>` tag.
-2. Initialize the canvas with ID **circularCanvas**.
-
-## Functions
 #### Initialization
-`initSched(title, daysCount, lineWidth, isDark)`
-* title - title of the schedule
-* daysCount - number of days to include *(default: M-Fr, 5)*
-* lineWidth - thickness of the arc in the circle *(default: 25)*
-* isDark - color of the lines; setting true will give dark lines
+Initialize the library by adding the library to your HTML file. Create a `<canvas>` to your file.
+```javascript
+circular.init(id, customConfig);
+```
+* **id** - ID of the canvas
+* **customConfig** - custom configurations for the canvas
+```javascript
+{
+	label: "My Schedule", // schedule title (placed at the middle of the schedule)
+	background: "#2c3e50", // canvas background color
+	isDarkTheme: true, // sets the "ghosts" to light or dark
+	hasEdge: true, // sets the subjects to circular or edged
+	invertedDays: true, // inverts the order of days
+	size: 25, // line size
 
-**Example:** `initSched("My Schedule", 5, 25, false);`
+	title: { // configurations for normal text
+		font: "Arial",
+		size: 12,
+		color: "#ffffff",
+	},
 
-#### Add Subject
-`drawSubject(color, day, start, end, isRounded);`
-* color - color of the subject
-* day - day to assign *(integer, M is 0, T is 1, etc.)*
-* start, end - time start and end *(7:00 to 19:00)*
-* isRounded - sets the subject to have circular caps
+	time: { // configurations for time indicators
+		font: "Arial",
+		size: 10.5,
+		color: "#ffffff",
+	},
 
-**Example:** `drawSubject("#000000", 1, "8:00", "9:30", true);`
+	colors: [] // array of color palette for subjects
+}
+```
+
+#### Adding Subjects
+```javascript
+circular.addCourse(day, time, courseTitle, section, room, color);
+```
+* **day** - *(array)* day of subjects -- 0: Mon, 1: Tue, 2: Wed, 3: Thu, 4: Fri
+* **time** - time of the subjects *in military time* separated by "-"
+* **courseTitle** - course title/course name
+* **section** - section
+* **room** - room *(optional)*
+* **color** - color of the subject in hex *(optional, uses colors in config.colors if not specified)*
+```javascript
+// Example
+circular.addCourse([0, 2, 4], "9:00-14:00", "X-1L", "ICS LH3", "#000000");
+```
+> Returns the ID of the subject
+
+#### Modifying Subjects
+```javascript
+circular.editSubject(id, args);
+```
+* **id** - id of subject to be modified
+* **args** - arguments to be replaced (array)
+
+#### Removing Subjects
+```javascript
+circular.rmSubject(id);
+```
+* **id** - id of subject to be removed
+> Returns the subject
+
+#### Helpers
+##### Refresh Canvas
+```javascript
+circular.refresh();
+```
+##### Get Array of Subjects
+```javascript
+circular.getSubjects();
+```
+##### Search for Subject
+```javascript
+circular.getCourse(id);
+```
+##### Save/Download Schedule
+```javascript
+circular.download();
+```

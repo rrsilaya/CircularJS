@@ -25,7 +25,7 @@
 			background: "#2c3e50",
 			isDarkTheme: true,
 			hasEdge: true,
-			invertedDays: false,
+			invertedDays: true,
 			size: 25,
 
 			title: {

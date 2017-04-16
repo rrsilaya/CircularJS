@@ -25,6 +25,7 @@
 			background: "#2c3e50",
 			isDarkTheme: true,
 			hasEdge: true,
+			invertedDays: true,
 
 			shadowColor: "rgba(0,0,0,0.3)",
 			size: 25,
@@ -157,7 +158,7 @@
 				setter.fillStyle = config.title.color;
 				setter.textAlign = !config.hasEdge ? "center" : "right";
 				setter.textBaseline = "middle";
-				setter.fillText(dayLabel[4 - j], !config.hasEdge ? cCenter.x + 5: cCenter.x - 10, cCenter.y - (100 + (j * (config.size + 5))));
+				setter.fillText(dayLabel[config.invertedDays ? j : 4 - j], !config.hasEdge ? cCenter.x + 5: cCenter.x - 10, cCenter.y - (100 + (j * (config.size + 5))));
 				setter.fill();
 				setter.closePath();
 			}
@@ -232,10 +233,50 @@
 			i;
 		circular.init(canvasID, config);
 
+		subjects = []; // Empty subjects
+
 		// Redo Subjects
 		for(i = 0; i < subject.length; i++) {
 			circular.addCourse(subject[i].args[0], subject[i].args[1], subject[i].args[2], subject[i].args[3], subject[i].args[4], subject[i].args[5]);
 		}
+	}
+
+	circular.rmSubject = function(id) {
+		for(var i in subjects) {
+			if(subjects[i].id === id) {
+				subjects.splice(i, 1);
+				break;
+			}
+		}
+		circular.refresh();
+	}
+
+	circular.getCourse = function(id) {
+		for(var i in subjects) {
+			if(subjects[i].id === id) return subjects[i];
+		}
+	}
+
+	circular.editSubject = function(id, args) {
+		circular.getCourse(id).args = args;
+		circular.refresh();
+	}
+
+	circular.download = function() {
+		var link = document.createElement("a");
+
+		link.type = "image/png";
+		link.target = "_blank";
+		link.setAttribute("download", "CircularJS-Schedule");
+		link.href = canvas.toDataURL();
+
+		// Listener
+		link.onclick = function() {
+			this.parentNode.removeChild(this);
+		}
+
+		document.getElementsByTagName("body")[0].appendChild(link);
+		link.click();
 	}
 
 	// Set Global

@@ -2,7 +2,7 @@
 Circular is a Javascript library for drawing a week-long circular schedule/timetable for university students using HTML5 canvas.
 
 ## Setting Up
-#### Initialization
+### Initialization
 Initialize the library by adding the library to your HTML file. Create a `<canvas>` to your file.
 ```javascript
 circular.init(id, customConfig);
@@ -30,11 +30,11 @@ circular.init(id, customConfig);
 		color: "#ffffff",
 	},
 
-	colors: [] // array of color palette for subjects
+	colors: [] // color palette for subjects
 }
 ```
 
-#### Adding Subjects
+### Adding Subjects
 ```javascript
 circular.addCourse(day, time, courseTitle, section, room, color);
 ```
@@ -50,34 +50,37 @@ circular.addCourse([0, 2, 4], "9:00-14:00", "X-1L", "ICS LH3", "#000000");
 ```
 > Returns the ID of the subject
 
-#### Modifying Subjects
+### Modifying Subjects
 ```javascript
 circular.editSubject(id, args);
 ```
 * **id** - id of subject to be modified
 * **args** - arguments to be replaced (array)
 
-#### Removing Subjects
+### Removing Subjects
 ```javascript
 circular.rmSubject(id);
 ```
 * **id** - id of subject to be removed
 > Returns the subject
 
-#### Helpers
-##### Refresh Canvas
+### Helpers
+#### Refresh Canvas
 ```javascript
 circular.refresh();
 ```
-##### Get Array of Subjects
+#### Get Array of Subjects
 ```javascript
 circular.getSubjects();
 ```
-##### Search for Subject
+#### Search for Subject
 ```javascript
 circular.getCourse(id);
 ```
-##### Save/Download Schedule
+#### Save/Download Schedule
 ```javascript
 circular.download();
 ```
+
+### Development
+If you would like to contribute to this project, just send a pull request. If you have any questions, you can contact me via [email](mailto:rrsilaya@up.edu.ph).

@@ -177,7 +177,7 @@
 		return subjects;
 	}
 
-	circular.addCourse = function(day, time, courseTitle, section, room, color) {
+	circular.drawSubject = function(day, time, courseTitle, section, room, color) {
 		var id,
 			illust = canvas.getContext("2d"),
 			parseTime = function(time) {
@@ -227,6 +227,10 @@
 		illust.font = config.time.size + "pt " + config.time.font;
 		illust.fillText(room || "TBA", subjectPos[0] + 20.5, subjectPos[1] + 18);
 		illust.closePath();
+	}
+
+	circular.addCourse = function(day, time, courseTitle, section, room, color) {
+		circular.drawSubject(day, time, courseTitle, section, room, color);
 
 		// Register to Array of Subjects
 		subjects.push({
@@ -242,11 +246,9 @@
 			i;
 		circular.init(canvasID, config);
 
-		subjects = []; // Empty subjects
-
 		// Redo Subjects
 		for(i = 0; i < subject.length; i++) {
-			circular.addCourse(subject[i].args[0], subject[i].args[1], subject[i].args[2], subject[i].args[3], subject[i].args[4], subject[i].args[5]);
+			circular.drawSubject(subject[i].args[0], subject[i].args[1], subject[i].args[2], subject[i].args[3], subject[i].args[4], subject[i].args[5]);
 		}
 	}
 

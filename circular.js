@@ -242,10 +242,8 @@
 				[...arguments, color] :
 				arguments
 		});
-		
-		c_id++;
 
-		console.log(circular.getCourse(id));
+		c_id++;
 
 		return id;
 	}

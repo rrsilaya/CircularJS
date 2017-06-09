@@ -16,6 +16,7 @@
 		canvasID,
 		canvas,
 		setter,
+		c_id = 0,
 		cCenter = {
 			x: 0,
 			y: 0 // - space for labels
@@ -91,6 +92,57 @@
 					}
 				}
 			}
+		},
+
+		drawSubject = function(day, time, courseTitle, section, room, color, n) {
+			var id,
+				illust = canvas.getContext("2d"),
+				parseTime = function(time) {
+					var time = time.split(":");
+
+					time[0] = (time[0] - 7) * 4; // hours
+					time[1] = (time[1] / 15); // minutes
+
+					return ((time[0] + time[1]) * ((3.5 - (2 / 14) - 1.5) / 48) + 1.5) * Math.PI;
+				},
+				drawBounds = function(bound, x, y) {
+					var dimensions = config.time.size + 1;
+
+					bound.lineTo(x, y);
+					bound.lineTo(x + dimensions, y);
+					bound.lineTo(x + dimensions, y + dimensions);
+					bound.lineTo(x, y + dimensions);
+				};
+
+			time = time.split("-");
+
+			// Draw Course
+			for(var i = 0; i < day.length; i++) {
+				illust.beginPath();
+				illust.arc(cCenter.x, cCenter.y, 100 + ((config.invertedDays ? day[i] : 4 - day[i]) * (config.size + 5)), parseTime(time[0]), parseTime(time[1]));
+				illust.lineWidth = config.size;
+				illust.strokeStyle = color;
+				if (!config.hasEdge) illust.lineCap = "round";
+				illust.stroke();
+				illust.closePath();
+			}
+
+			// List Subjects
+			var subjectPos = [n % 2 == 0 ? canvas.width - (canvas.width / 2.85) : canvas.width - (canvas.width / 5.45),
+							  (canvas.height - (canvas.height / 1.35) + (Math.floor(n / 2) * 45))];
+
+			illust.beginPath();
+			illust.fillStyle = color;
+			drawBounds(illust, subjectPos[0], subjectPos[1]);
+			illust.fill();
+			illust.textAlign = "left";
+			illust.textBaseline = "hanging";
+			illust.font = "bold " + config.time.size + "pt " + config.time.font;
+			illust.fillStyle = config.time.color;
+			illust.fillText(courseTitle + " " + section, subjectPos[0] + 20.5, subjectPos[1] + 0.9);
+			illust.font = config.time.size + "pt " + config.time.font;
+			illust.fillText(room || "TBA", subjectPos[0] + 20.5, subjectPos[1] + 18);
+			illust.closePath();
 		};
 
 	circular.init = function(id, customConfig) {
@@ -177,78 +229,42 @@
 		return subjects;
 	}
 
-	circular.drawSubject = function(day, time, courseTitle, section, room, color) {
-		var id,
-			illust = canvas.getContext("2d"),
-			parseTime = function(time) {
-				var time = time.split(":");
-
-				time[0] = (time[0] - 7) * 4; // hours
-				time[1] = (time[1] / 15); // minutes
-
-				return ((time[0] + time[1]) * ((3.5 - (2 / 14) - 1.5) / 48) + 1.5) * Math.PI;
-			},
-			drawBounds = function(bound, x, y) {
-				var dimensions = config.time.size + 1;
-
-				bound.lineTo(x, y);
-				bound.lineTo(x + dimensions, y);
-				bound.lineTo(x + dimensions, y + dimensions);
-				bound.lineTo(x, y + dimensions);
-			};
-
-		time = time.split("-");
-
-		// Draw Course
-		color =  color || config.colors[subjects.length % config.colors.length];
-		for(var i = 0; i < day.length; i++) {
-			illust.beginPath();
-			illust.arc(cCenter.x, cCenter.y, 100 + ((config.invertedDays ? day[i] : 4 - day[i]) * (config.size + 5)), parseTime(time[0]), parseTime(time[1]));
-			illust.lineWidth = config.size;
-			illust.strokeStyle = color;
-			if (!config.hasEdge) illust.lineCap = "round";
-			illust.stroke();
-			illust.closePath();
-		}
-
-		// List Subjects
-		var subjectPos = [circular.getSubjects().length % 2 == 0 ? canvas.width - (canvas.width / 2.85) : canvas.width - (canvas.width / 5.45),
-						  (canvas.height - (canvas.height / 1.35) + (Math.floor(circular.getSubjects().length / 2) * 45))];
-
-		illust.beginPath();
-		illust.fillStyle = color;
-		drawBounds(illust, subjectPos[0], subjectPos[1]);
-		illust.fill();
-		illust.textAlign = "left";
-		illust.textBaseline = "hanging";
-		illust.font = "bold " + config.time.size + "pt " + config.time.font;
-		illust.fillStyle = config.time.color;
-		illust.fillText(courseTitle + " " + section, subjectPos[0] + 20.5, subjectPos[1] + 0.9);
-		illust.font = config.time.size + "pt " + config.time.font;
-		illust.fillText(room || "TBA", subjectPos[0] + 20.5, subjectPos[1] + 18);
-		illust.closePath();
-	}
-
 	circular.addCourse = function(day, time, courseTitle, section, room, color) {
-		circular.drawSubject(day, time, courseTitle, section, room, color);
+		var id,
+			color = color || config.colors[c_id % config.colors.length];
+
+		drawSubject(day, time, courseTitle, section, room, color, subjects.length);
 
 		// Register to Array of Subjects
 		subjects.push({
 			id: id = uuid(),
-			args: arguments
+			args: arguments.length === 5 ?
+				[...arguments, color] :
+				arguments
 		});
+		
+		c_id++;
+
+		console.log(circular.getCourse(id));
 
 		return id;
 	}
 
 	circular.refresh = function() {
-		var subject = circular.getSubjects(),
-			i;
+		var i;
 		circular.init(canvasID, config);
 
 		// Redo Subjects
-		for(i = 0; i < subject.length; i++) {
-			circular.drawSubject(subject[i].args[0], subject[i].args[1], subject[i].args[2], subject[i].args[3], subject[i].args[4], subject[i].args[5]);
+		for(i = 0; i < subjects.length; i++) {
+			drawSubject(
+				subjects[i].args[0],
+				subjects[i].args[1],
+				subjects[i].args[2],
+				subjects[i].args[3],
+				subjects[i].args[4],
+				subjects[i].args[5],
+				i
+			);
 		}
 	}
 

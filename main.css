@@ -14,6 +14,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 }
-	#workarea canvas {
-		box-shadow: 0 0 1.5em rgba(0,0,0,0.5);
-	}
+
+#workarea canvas {
+	box-shadow: 0 0 1.5em rgba(0,0,0,0.5);
+}

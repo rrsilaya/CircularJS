@@ -8,7 +8,7 @@ const config = {
 
 	title: {
 		font: "Arial",
-		size: 25,
+		size: 12,
 		color: "#ffffff",
 	},
 
